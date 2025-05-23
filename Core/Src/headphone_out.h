@@ -1,5 +1,5 @@
 /*
- * headphone_out.h
+ * Contains headphone output functions
  *
  *  Created on: May 23, 2025
  *      Author: matthew

@@ -18,14 +18,14 @@
 // Some generic stuff to do with the DAC
 #define DAC_MIDPOINT 2048
 #define DAC_AMPLITUDE 2047 // max amplitude to avoid overflow
-#define DAC_MAX_VALUE DAC_MIDPOINT + DAC_AMPLITUDE
+#define DAC_MAX_VALUE (DAC_MIDPOINT + DAC_AMPLITUDE)
 
 //----------Configuration for the RX signal-------
 
 // Perscaler for the RX DAC (from CubeMX)
 #define RX_ADC_PRESCALER 32
 
-#define RX_ADC_CLOCK_HZ ADC_CLOCK_HZ / RX_ADC_PRESCALER
+#define RX_ADC_CLOCK_HZ (ADC_CLOCK_HZ / RX_ADC_PRESCALER)
 
 // Number of ADC sampling clocks per sample (from CubeMX)
 #define RX_ADC_SAMPLING_CLOCKS 12.5
@@ -70,7 +70,7 @@
 #define HEADPHONE_TIMER_ARR 7635
 
 // Sampling rate of headphone DAC (in Hz), based on timer ARR and APB1 clock
-#define HEADPHONE_SAMPL_RATE_HZ (APB1_CLOCK_HZ / (HEADPHONE_TIMER_ARR + 1))
+#define HEADPHONE_SAMPLE_RATE_HZ (APB1_CLOCK_HZ / (HEADPHONE_TIMER_ARR + 1))
 
 //Number of samples in the headphone circular buffer
 #define HEADPHONE_BUFFER_SAMPLES 1100
