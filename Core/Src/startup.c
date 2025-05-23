@@ -1,11 +1,11 @@
 #include "startup.h"
 #include "stm32g4xx_hal.h"
-#include "tx_sine_generator.h"
-#include "analyze_rx.h"
 #include <stdbool.h>
 #include "config.h"
+#include "tx_sine_generator.h"
+#include "analyze_rx.h"
+#include "headphone_out.h"
 
-// ADC buffer for 1024 samples (16-bit each)
 uint16_t adcBuffer[RX_ANALYSIS_SAMPLES];
 
 // Completion flag set by DMA complete callback
@@ -15,7 +15,7 @@ volatile bool adcDmaDone = false;
  * Starts ADC in DMA mode, waits for 1024 samples,
  * and toggles PC6 (typically an LED) after each cycle.
  */
-void begin(ADC_HandleTypeDef *rxADC, DAC_HandleTypeDef *txDAC, TIM_HandleTypeDef *txTIM)
+void begin(ADC_HandleTypeDef *rxADC, DAC_HandleTypeDef *txDAC, TIM_HandleTypeDef *txTIM, DAC_HandleTypeDef *headphoneDAC, TIM_HandleTypeDef *headphoneTIM)
 {
 
     //Pregenerate our waveforms
@@ -23,6 +23,9 @@ void begin(ADC_HandleTypeDef *rxADC, DAC_HandleTypeDef *txDAC, TIM_HandleTypeDef
 
     //Start our TX signal
     tx_sine_start(txDAC, txTIM);
+
+    //Start our headphone signal
+    headphone_out_start(headphoneDAC, headphoneTIM);
 
     // Make sure LED is off initially
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);

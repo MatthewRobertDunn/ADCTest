@@ -10,6 +10,6 @@
 #include "stm32g4xx_hal.h"
 
 //Moved all code into here, keep it clean of stm32 jank
-void begin(ADC_HandleTypeDef *rxADC, DAC_HandleTypeDef *txDAC, TIM_HandleTypeDef *txTIM);
+void begin(ADC_HandleTypeDef *rxADC, DAC_HandleTypeDef *txDAC, TIM_HandleTypeDef *txTIM, DAC_HandleTypeDef *headphoneDAC, TIM_HandleTypeDef *headphoneTIM);
 
 #endif /* SRC_STARTUP_H_ */

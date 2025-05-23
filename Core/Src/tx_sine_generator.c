@@ -19,7 +19,6 @@ uint16_t tx_sine_dac_buffer[TX_SIGNAL_WAVELENGTH_SAMPLES];
  */
 void tx_sine_init_buffer(void)
 {
-	//first half circular buffer
     for (int i = 0; i < TX_SIGNAL_WAVELENGTH_SAMPLES; i++)
     {
         tx_sine_dac_buffer[i] = (uint16_t)(DAC_MIDPOINT + DAC_AMPLITUDE * sinf(2.0f * M_PI * i / TX_SIGNAL_WAVELENGTH_SAMPLES));
