@@ -30,11 +30,8 @@ void headphone_out_start(DAC_HandleTypeDef *dac, TIM_HandleTypeDef *tim)
 {
     headphone_set_frequency(500);
 
-    // Enable callbacks to fill headphone buffers.
-    __HAL_DMA_ENABLE_IT(dac->DMA_Handle2, DMA_IT_HT); // half-transfer
-    __HAL_DMA_ENABLE_IT(dac->DMA_Handle2, DMA_IT_TC); // transfer-complete
-
     // Fill buffer with midpoint for starters, makes it easier to check if the DAC is turned on
+    //Just look for 3.3V / 2 voltage
     for (int i = 0; i < HEADPHONE_BUFFER_SAMPLES; i++)
     {
         headphone_buffer[i] = (uint16_t)(DAC_MIDPOINT);
