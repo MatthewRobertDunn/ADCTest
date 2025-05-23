@@ -23,7 +23,6 @@ void tx_sine_init_buffer(void)
     for (int i = 0; i < TX_SIGNAL_WAVELENGTH_SAMPLES; i++)
     {
         tx_sine_dac_buffer[i] = (uint16_t)(DAC_MIDPOINT + DAC_AMPLITUDE * sinf(2.0f * M_PI * i / TX_SIGNAL_WAVELENGTH_SAMPLES));
-    	//tx_sine_dac_buffer[i] = 2048;
     }
 }
 
@@ -40,16 +39,6 @@ void tx_sine_init_buffer(void)
  */
 void tx_sine_start(DAC_HandleTypeDef *dac, TIM_HandleTypeDef *tim)
 {
-	//enable DAC
-	HAL_DAC_Start(dac, TX_DAC_CHANNEL);
-
-	//We need to set the pin as output mode
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
-	GPIO_InitStruct.Pin = GPIO_PIN_4;
-	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
 	//Set the timer.
     HAL_TIM_Base_Start(tim);
     HAL_DAC_Start_DMA(dac, TX_DAC_CHANNEL, (uint32_t*)tx_sine_dac_buffer, TX_SIGNAL_WAVELENGTH_SAMPLES, DAC_ALIGN_12B_R);
