@@ -6,10 +6,10 @@
 // Circular buffer for DMA
 uint16_t headphone_buffer[HEADPHONE_BUFFER_SAMPLES];
 
-// Internal triangle generator state, todo, export
-static volatile float tri_value;
+// Internal triangle generator state
+static volatile float tri_value = 0.0f;
 static volatile float tri_step;
-static volatile int8_t tri_dir;
+static volatile int8_t tri_dir = 1;
 
 // Forward declaration
 static void fill_buffer(uint32_t offset, uint32_t length);
@@ -54,8 +54,6 @@ void headphone_set_frequency(float frequency)
 {
     // Compute triangle step: full swing (2 * HEADPHONE_DAC_MAX) * freq / sample rate
     tri_step = (2.0f * DAC_MAX_VALUE * frequency) / HEADPHONE_SAMPLE_RATE_HZ;
-    tri_value = 0.0f;
-    tri_dir = 1;
 }
 
 // DMA half-transfer complete callback

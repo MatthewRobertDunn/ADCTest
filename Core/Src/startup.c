@@ -47,7 +47,7 @@ void begin(ADC_HandleTypeDef *rxADC, DAC_HandleTypeDef *txDAC, TIM_HandleTypeDef
         adcDmaDone = false;
 
         // Start ADC + DMA transfer of 1024 samples
-        if (HAL_ADC_Start_DMA(rxADC, (uint32_t *)adcBuffer, 1024) != HAL_OK)
+        if (HAL_ADC_Start_DMA(rxADC, (uint32_t *)adcBuffer, RX_ANALYSIS_SAMPLES) != HAL_OK)
         {
             // Handle error here if needed
             continue;

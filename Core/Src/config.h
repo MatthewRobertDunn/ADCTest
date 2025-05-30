@@ -39,7 +39,7 @@
 // Number of samples to analyze from the RX coil per cycle; make it 20mS worth
 // #define RX_ANALYSIS_SAMPLES ((unsigned int)(RX_ADC_SAMPLING_RATE_HZ * 0.02))
 
-#define RX_ANALYSIS_SAMPLES 4200
+#define RX_ANALYSIS_SAMPLES 1024
 
 //----------Configuration for the TX signal-------
 
