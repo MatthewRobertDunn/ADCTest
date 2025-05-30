@@ -37,6 +37,10 @@ void send_to_usb(uint8_t *buffer, unsigned int length)
 	}
 }
 
+void wait_for_usb_to_complete(){
+
+}
+
 /**
  * @brief Sends data to MPLAB via USB.
  *
@@ -49,15 +53,15 @@ void send_to_usb(uint8_t *buffer, unsigned int length)
 
 void send_to_mplab(uint16_t *buffer, unsigned int length)
 {
-	for (int i = 0; i < length; i++)
-	{
-		// start byte
-		send_to_usb(&mplab_start_byte, 1);
-		// send the two data bytes
-		send_to_usb((uint8_t*)&buffer[i], 2);
-		// end byte
-		send_to_usb(&mplab_end_byte, 1);
-	}
+    uint8_t tx_buf[4];
+    for (unsigned int i = 0; i < length; i++)
+    {
+        tx_buf[0] = mplab_start_byte;
+        tx_buf[1] = buffer[i] & 0xFF;        // Low byte
+        tx_buf[2] = (buffer[i] >> 8) & 0xFF; // High byte
+        tx_buf[3] = mplab_end_byte;
+        send_to_usb(tx_buf, 4);
+    }
 }
 
 /**
