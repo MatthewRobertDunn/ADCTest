@@ -10,7 +10,6 @@ uint8_t mplab_zero = 0x00;
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
-/*************  ✨ Windsurf Command ⭐  *************/
 /**
  * @brief Blocking transmit of data over USB CDC
  * @param buffer: Buffer of data to transmit
@@ -38,7 +37,6 @@ void send_to_usb(uint8_t *buffer, unsigned int length)
 	}
 }
 
-/*************  ✨ Windsurf Command ⭐  *************/
 /**
  * @brief Sends data to MPLAB via USB.
  *
