@@ -53,7 +53,7 @@ void send_to_mplab(uint16_t *buffer, unsigned int length)
 	{
 		// start byte
 		send_to_usb(&mplab_start_byte, 1);
-		// send the two bytes
+		// send the two data bytes
 		send_to_usb(&buffer[i], 2);
 		// end byte
 		send_to_usb(&mplab_end_byte, 1);
