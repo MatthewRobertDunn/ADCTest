@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include "usbd_cdc_if.h"
 
-#define USB_TRANSMIT_TIMEOUT_MS 100
+#define USB_TRANSMIT_TIMEOUT_MS 10
 uint8_t mplab_start_byte = 0x03;
 uint8_t mplab_end_byte = 0xFC;
 uint8_t mplab_prescaler = 0x01;
