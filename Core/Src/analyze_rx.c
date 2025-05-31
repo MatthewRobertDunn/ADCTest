@@ -63,7 +63,23 @@ void send_to_mplab(uint16_t *buffer, unsigned int length)
         send_to_usb(tx_buf, 4);
     }
 }
+void send_as_text(uint16_t *buffer, unsigned int length)
+{
+    char txt_buf[7];  // Max 5 digits for uint16_t + comma + null terminator
 
+    for (unsigned int i = 0; i < length; i++)
+    {
+        if (i < length - 1)
+            sprintf(txt_buf, "%u,", buffer[i]);
+        else
+            sprintf(txt_buf, "%u", buffer[i]);
+
+        send_to_usb((uint8_t *)txt_buf, strlen(txt_buf));
+    }
+
+    // Send final CR/LF once
+    send_to_usb((uint8_t *)"\r\n", 2);
+}
 /**
  * @brief Analyze the received signal from the RX coil
  *
@@ -76,5 +92,5 @@ void send_to_mplab(uint16_t *buffer, unsigned int length)
 void analyze_rx(uint16_t *buffer, unsigned int length, unsigned int samplingRateHz)
 {
 	// TODO: Place your debug/analysis of RX buffer here.
-	send_to_mplab(buffer, length);
+	send_as_text(buffer, length);
 }
