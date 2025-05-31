@@ -63,6 +63,17 @@ void send_to_mplab(uint16_t *buffer, unsigned int length)
         send_to_usb(tx_buf, 4);
     }
 }
+
+/**
+ * @brief Sends data to MPLAB via USB as a human-readable text.
+ *
+ * This function transmits a sequence of 16-bit data values to MPLAB over USB.
+ * Each value is formatted as a string and separated by a comma. The last value
+ * is followed by a CR/LF pair.
+ *
+ * @param buffer Pointer to the array of 16-bit data to send.
+ * @param length Number of 16-bit data values in the buffer to be sent.
+ */
 void send_as_text(uint16_t *buffer, unsigned int length)
 {
     char txt_buf[7];  // Max 5 digits for uint16_t + comma + null terminator
