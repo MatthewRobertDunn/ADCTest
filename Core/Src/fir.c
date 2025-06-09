@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stm32g4xx_hal_fmac.h>
+#include "debug_output.h"
+#include "prng.h"
 
 /* Filter parameter Q: not used */
 #define FILTER_PARAM_Q_NOT_USED 0
@@ -32,7 +34,13 @@
 #define POLLING_TIMEOUT 1000
 
 /* Array of filter coefficients B (feed-forward taps) in Q1.15 format */
-static int16_t filter_coefficients[TAPS_COUNT];
+//Should match https://imgur.com/a/fiFAxEh
+static int16_t filter_coefficients[TAPS_COUNT] = 
+{
+		-165, 603, -388, -555, -558, -542, -502, -416, -267, -59, 190, 452, 691, 871, 958, 929, 777, 509, 150, -257, -663, -1013, -1257, -1358, -1293, -1064, -694, -225, 285, 772, 1175, 1439, 1531, 1439, 1175, 772, 285, -225, -694, -1064, -1293, -1358, -1257, -1013, -663, -257, 150, 509, 777, 929, 958, 871, 691, 452, 190, -59, -267, -416, -502, -542, -558, -555, -388, 603, -165
+};
+
+
 
 
 FMAC_FilterConfigTypeDef sFmacConfig;
@@ -123,12 +131,34 @@ bool fir_filter(int16_t *input, int16_t *output, uint16_t length)
 	return true;
 }
 
+
+uint16_t get_random_uint16(void)
+{
+   return (uint16_t)(next_random_uint32_t() & 0xFFFF);
+}
+
+
 //Perform self tests
 void fir_test(){
 	uint16_t input[1024];
+
+	//Fill input with white noise to determine frequency response
+	for(int i = 0; i < 1024; i++)
+	{
+		input[i] = get_random_uint16();
+	}
+
+
 	uint16_t output[1024];
+	//Null out output so its clean
+	for(int i=0; i < 1024; i++)
+	{
+		output[i] = 0;
+	}
+
 	if(fir_filter(input, output, 1024))
 	{
-		
+		//RUN FFT and print results?
+		usb_send_as_text(output, 1024);
 	}
 }
