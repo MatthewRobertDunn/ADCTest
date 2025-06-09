@@ -1,8 +1,8 @@
 // fir.c
 #include "fir.h"
 #include <stdint.h>
-
-#define COEFF_VECTOR_B_SIZE 5
+#include <stdbool.h>
+#include <stm32g4xx_hal_fmac.h>
 
 /* Filter parameter Q: not used */
 #define FILTER_PARAM_Q_NOT_USED 0
@@ -34,48 +34,54 @@
 /* Array of filter coefficients B (feed-forward taps) in Q1.15 format */
 static int16_t filter_coefficients[TAPS_COUNT];
 
+
+FMAC_FilterConfigTypeDef sFmacConfig;
+FMAC_HandleTypeDef *g_hfmac = NULL;
+
 void error_handler()
 {
 }
 
-void fir_start(FMAC_HandleTypeDef *hfmac, FMAC_FilterConfigTypeDef *sFmacConfig)
+void fir_start(FMAC_HandleTypeDef *hfmac)
 {
-	sFmacConfig->InputBaseAddress = TAPS_COUNT;
-	sFmacConfig->InputBufferSize = INPUT_BUFFER_SIZE;
-	sFmacConfig->InputThreshold = FMAC_THRESHOLD_1;
-	sFmacConfig->CoeffBaseAddress = TAPS_COUNT;
-	sFmacConfig->CoeffBufferSize = TAPS_COUNT;
-	sFmacConfig->OutputBaseAddress = OUTPUT_BUFFER_BASE;
-	sFmacConfig->OutputBufferSize = OUTPUT_BUFFER_SIZE;
-	sFmacConfig->OutputThreshold = FMAC_THRESHOLD_1;
-	sFmacConfig->pCoeffA = NULL;
-	sFmacConfig->CoeffASize = 0;
-	sFmacConfig->pCoeffB = filter_coefficients;
-	sFmacConfig->CoeffBSize = COEFF_VECTOR_B_SIZE;
-	sFmacConfig->Filter = FMAC_FUNC_CONVO_FIR;
-	sFmacConfig->InputAccess = FMAC_BUFFER_ACCESS_POLLING;
-	sFmacConfig->OutputAccess = FMAC_BUFFER_ACCESS_POLLING;
-	sFmacConfig->Clip = FMAC_CLIP_DISABLED;
-	sFmacConfig->P = TAPS_COUNT;
-	sFmacConfig->Q = FILTER_PARAM_Q_NOT_USED;
-	sFmacConfig->R = GAIN;
+	sFmacConfig.InputBaseAddress = TAPS_COUNT;
+	sFmacConfig.InputBufferSize = INPUT_BUFFER_SIZE;
+	sFmacConfig.InputThreshold = FMAC_THRESHOLD_1;
+	sFmacConfig.CoeffBaseAddress = TAPS_COUNT;
+	sFmacConfig.CoeffBufferSize = TAPS_COUNT;
+	sFmacConfig.OutputBaseAddress = OUTPUT_BUFFER_BASE;
+	sFmacConfig.OutputBufferSize = OUTPUT_BUFFER_SIZE;
+	sFmacConfig.OutputThreshold = FMAC_THRESHOLD_1;
+	sFmacConfig.pCoeffA = NULL;
+	sFmacConfig.CoeffASize = 0;
+	sFmacConfig.pCoeffB = filter_coefficients;
+	sFmacConfig.CoeffBSize = TAPS_COUNT;
+	sFmacConfig.Filter = FMAC_FUNC_CONVO_FIR;
+	sFmacConfig.InputAccess = FMAC_BUFFER_ACCESS_POLLING;
+	sFmacConfig.OutputAccess = FMAC_BUFFER_ACCESS_POLLING;
+	sFmacConfig.Clip = FMAC_CLIP_DISABLED;
+	sFmacConfig.P = TAPS_COUNT;
+	sFmacConfig.Q = FILTER_PARAM_Q_NOT_USED;
+	sFmacConfig.R = GAIN;
 
-	if (HAL_FMAC_FilterConfig(hfmac, sFmacConfig) != HAL_OK)
+	if (HAL_FMAC_FilterConfig(hfmac, &sFmacConfig) != HAL_OK)
 	{
 		/* Configuration Error */
 		error_handler();
 		return;
 	}
+
+	g_hfmac = hfmac;
 }
 
-void fir_filter(int16_t *input, int16_t *output, uint16_t length)
+bool fir_filter(int16_t *input, int16_t *output, uint16_t length)
 {
 	// preload buffer, only needed for streaming data instead of blocks
 	if (HAL_FMAC_FilterPreload(g_hfmac, NULL, 0,
 							   NULL, 0) != HAL_OK)
 	{
 		error_handler();
-		return;
+		return false;
 	}
 
 	// Configure the output buffer
@@ -84,6 +90,7 @@ void fir_filter(int16_t *input, int16_t *output, uint16_t length)
 	{
 		/* Processing Error */
 		error_handler();
+		return false;
 	}
 
 	// Configure the input buffer
@@ -93,15 +100,25 @@ void fir_filter(int16_t *input, int16_t *output, uint16_t length)
 								  &expectedInputSize) != HAL_OK)
 	{
 		error_handler();
-		return;
+		return false;
 	}
 
 	// Do the actual filtering, actual work done will be in samplesWritten
 	if (HAL_FMAC_PollFilterData(g_hfmac, POLLING_TIMEOUT) != HAL_OK)
 	{
 		error_handler();
-		return;
+		return false;
 	}
 
-	return;
+	return true;
+}
+
+//Perform self tests
+void fir_test(){
+	uint16_t input[1024];
+	uint16_t output[1024];
+	if(fir_filter(input, output, 1024))
+	{
+		
+	}
 }
