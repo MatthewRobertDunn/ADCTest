@@ -74,6 +74,16 @@ void fir_start(FMAC_HandleTypeDef *hfmac)
 	g_hfmac = hfmac;
 }
 
+
+/**
+ * @brief  Processes input data through the FIR filter and generates filtered output.
+ * @param  input: Pointer to the input data array.
+ * @param  output: Pointer to the output data array where the filtered data will be stored.
+ * @param  length: Number of samples to be processed.
+ * @retval true if filtering is successful, false if an error occurs.
+ * @note   This function utilizes the FMAC peripheral for FIR filtering.
+ */
+
 bool fir_filter(int16_t *input, int16_t *output, uint16_t length)
 {
 	// preload buffer, only needed for streaming data instead of blocks
