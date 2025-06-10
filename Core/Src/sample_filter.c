@@ -50,7 +50,7 @@ unsigned int SampleFilter_run(SampleFilter *f, float *input, float *output, unsi
     unsigned int write_index = 0;
     if (length <= SAMPLEFILTER_TAP_NUM)
     {
-        // Error, data must b emuch longer than number of taps
+        // Error, data must be longer than number of taps
         return 0;
     }
 
@@ -64,7 +64,7 @@ unsigned int SampleFilter_run(SampleFilter *f, float *input, float *output, unsi
     for (; i < length - SAMPLEFILTER_TAP_NUM; i++)
     {
         SampleFilter_put(f, input[i]);
-        output[i] = SampleFilter_get(f);
+        output[write_index] = SampleFilter_get(f);
         write_index++;
     }
 
