@@ -61,7 +61,7 @@ unsigned int SampleFilter_run(SampleFilter *f, float *input, float *output, unsi
         SampleFilter_put(f, input[i]);
     }
 
-    for (; i < length - SAMPLEFILTER_TAP_NUM; i++)
+    for (; i < length; i++)
     {
         SampleFilter_put(f, input[i]);
         output[write_index] = SampleFilter_get(f);
