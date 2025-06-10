@@ -15,6 +15,13 @@
 /* Filter parameter P: number of feed-forward taps or coefficients in the range [2:127] */
 #define TAPS_COUNT 65
 
+/* Array of filter coefficients B (feed-forward taps) in Q1.15 format */
+//Should match https://imgur.com/a/fiFAxEh
+static int16_t filter_coefficients[TAPS_COUNT] = 
+{
+	-165, 603, -388, -555, -558, -542, -502, -416, -267, -59, 190, 452, 691, 871, 958, 929, 777, 509, 150, -257, -663, -1013, -1257, -1358, -1293, -1064, -694, -225, 285, 772, 1175, 1439, 1531, 1439, 1175, 772, 285, -225, -694, -1064, -1293, -1358, -1257, -1013, -663, -257, 150, 509, 777, 929, 958, 871, 691, 452, 190, -59, -267, -416, -502, -542, -558, -555, -388, 603, -165
+};
+
 /* Throughput parameter: extra space in the input buffer (minimum: 0) */
 #define MEMORY_PARAMETER_D1 54 // must be less than 255 - TAPS_COUNT, must be multiple of RX_ANALYSIS_SAMPLES
 /* Throughput parameter: extra space in the output buffer (minimum: 1) */
@@ -33,14 +40,6 @@
 
 #define POLLING_TIMEOUT 1000
 
-/* Array of filter coefficients B (feed-forward taps) in Q1.15 format */
-//Should match https://imgur.com/a/fiFAxEh
-static int16_t filter_coefficients[TAPS_COUNT] = 
-{
-		-165, 603, -388, -555, -558, -542, -502, -416, -267, -59, 190, 452, 691, 871, 958, 929, 777, 509, 150, -257, -663, -1013, -1257, -1358, -1293, -1064, -694, -225, 285, 772, 1175, 1439, 1531, 1439, 1175, 772, 285, -225, -694, -1064, -1293, -1358, -1257, -1013, -663, -257, 150, 509, 777, 929, 958, 871, 691, 452, 190, -59, -267, -416, -502, -542, -558, -555, -388, 603, -165
-};
-
-
 
 
 FMAC_FilterConfigTypeDef sFmacConfig;
@@ -50,12 +49,22 @@ void error_handler()
 {
 }
 
+
+/**
+ * @brief  Initialize the FMAC filter with the given configuration and start the filter.
+ * @param  hfmac pointer to a FMAC_HandleTypeDef structure that contains
+ *         the configuration information for FMAC module.
+ * @note   This function configures the FMAC according to the parameters
+ *         specified in the FMAC_FilterConfigTypeDef structure, and
+ *         starts the filter.
+ * @retval None
+ */
 void fir_start(FMAC_HandleTypeDef *hfmac)
 {
 	sFmacConfig.InputBaseAddress = TAPS_COUNT;
 	sFmacConfig.InputBufferSize = INPUT_BUFFER_SIZE;
 	sFmacConfig.InputThreshold = FMAC_THRESHOLD_1;
-	sFmacConfig.CoeffBaseAddress = TAPS_COUNT;
+	sFmacConfig.CoeffBaseAddress = 0;
 	sFmacConfig.CoeffBufferSize = TAPS_COUNT;
 	sFmacConfig.OutputBaseAddress = OUTPUT_BUFFER_BASE;
 	sFmacConfig.OutputBufferSize = OUTPUT_BUFFER_SIZE;
@@ -65,7 +74,7 @@ void fir_start(FMAC_HandleTypeDef *hfmac)
 	sFmacConfig.pCoeffB = filter_coefficients;
 	sFmacConfig.CoeffBSize = TAPS_COUNT;
 	sFmacConfig.Filter = FMAC_FUNC_CONVO_FIR;
-	sFmacConfig.InputAccess = FMAC_BUFFER_ACCESS_POLLING;
+	sFmacConfig.InputAccess = FMAC_BUFFER_ACCESS_POLLING; //Poll for results, wait for interrupt, or use DMA
 	sFmacConfig.OutputAccess = FMAC_BUFFER_ACCESS_POLLING;
 	sFmacConfig.Clip = FMAC_CLIP_DISABLED;
 	sFmacConfig.P = TAPS_COUNT;
@@ -91,7 +100,6 @@ void fir_start(FMAC_HandleTypeDef *hfmac)
  * @retval true if filtering is successful, false if an error occurs.
  * @note   This function utilizes the FMAC peripheral for FIR filtering.
  */
-
 bool fir_filter(int16_t *input, int16_t *output, uint16_t length)
 {
 	// preload buffer, only needed for streaming data instead of blocks
@@ -101,6 +109,8 @@ bool fir_filter(int16_t *input, int16_t *output, uint16_t length)
 		error_handler();
 		return false;
 	}
+
+
 
 	// Configure the output buffer
 	uint16_t samplesWritten = length;
@@ -132,13 +142,26 @@ bool fir_filter(int16_t *input, int16_t *output, uint16_t length)
 }
 
 
+
+/**
+ * @brief Generate a random 16-bit unsigned integer
+ *
+ * @return A 16-bit unsigned integer with a random value between 0 and 0xFFFF
+ */
 uint16_t get_random_uint16(void)
 {
    return (uint16_t)(next_random_uint32_t() & 0xFFFF);
 }
 
 
-//Perform self tests
+
+/**
+ * @brief  Test the FIR filter implementation using random noise as input.
+ * @note   This function generates white noise as input data, processes it through the FIR filter,
+ *         and continuously sends the filtered output via USB for analysis. The output can be used
+ *         to determine the frequency response of the filter. The function runs indefinitely, sending
+ *         the filtered data every 30 seconds.
+ */
 void fir_test(){
 	uint16_t input[1024];
 
@@ -156,9 +179,12 @@ void fir_test(){
 		output[i] = 0;
 	}
 
-	if(fir_filter(input, output, 1024))
+	if(fir_filter((int16_t*)input, (int16_t*)output, 1024))
 	{
-		//RUN FFT and print results?
-		usb_send_as_text(output, 1024);
+		while(true)
+		{//RUN FFT and print results?
+			usb_send_as_text(output, 1024);
+			HAL_Delay(30000);
+		}
 	}
 }
