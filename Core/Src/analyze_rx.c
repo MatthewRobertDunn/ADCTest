@@ -44,9 +44,11 @@ void analyze_rx(uint16_t *buffer, unsigned int length, unsigned int samplingRate
     float float_buffer[length];
     adc_to_float_buffer(buffer, float_buffer, length);
 
+    float output_buffer[length];
+
     //Run the filter
-    if(SampleFilter_run(&rx_filter, float_buffer, float_buffer, length) > 0)
+    if(SampleFilter_run(&rx_filter, float_buffer, output_buffer, length) > 0)
     {
-        //Sampling filter worked, do something with the output.
+        //Sampling filter worked, do something with the output output_buffer
     }
 }
