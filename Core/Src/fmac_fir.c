@@ -1,5 +1,5 @@
 // fir.c
-#include "fir.h"
+#include "fmac_fir.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <stm32g4xx_hal_fmac.h>
@@ -59,7 +59,7 @@ void error_handler()
  *         starts the filter.
  * @retval None
  */
-void fir_start(FMAC_HandleTypeDef *hfmac)
+void fmac_fir_start(FMAC_HandleTypeDef *hfmac)
 {
 	sFmacConfig.InputBaseAddress = TAPS_COUNT;
 	sFmacConfig.InputBufferSize = INPUT_BUFFER_SIZE;
@@ -100,7 +100,7 @@ void fir_start(FMAC_HandleTypeDef *hfmac)
  * @retval true if filtering is successful, false if an error occurs.
  * @note   This function utilizes the FMAC peripheral for FIR filtering.
  */
-bool fir_filter(int16_t *input, int16_t *output, uint16_t length)
+bool fmac_fir_filter(int16_t *input, int16_t *output, uint16_t length)
 {
 	// preload buffer, only needed for streaming data instead of blocks
 	if (HAL_FMAC_FilterPreload(g_hfmac, NULL, 0,
@@ -179,7 +179,7 @@ void fir_test(){
 		output[i] = 0;
 	}
 
-	if(fir_filter((int16_t*)input, (int16_t*)output, 1024))
+	if(fmac_fir_filter((int16_t*)input, (int16_t*)output, 1024))
 	{
 		while(true)
 		{//RUN FFT and print results?

@@ -42,6 +42,9 @@ void begin(ADC_HandleTypeDef *rxADC, DAC_HandleTypeDef *txDAC, TIM_HandleTypeDef
     // Make sure LED is off initially
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
 
+    //start our rx_analyze module
+    analyze_rx_start();
+
     while (1)
     {
         adcDmaDone = false;

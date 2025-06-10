@@ -7,7 +7,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "startup.h"
-#include "fir.h"
+#include "fmac_fir.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -95,8 +95,7 @@ int main(void)
   /* USER CODE END WHILE */
   /* USER CODE BEGIN 3 */
 
-  fir_start(&hfmac);
-  fir_test();
+  fmac_fir_start(&hfmac);
   begin(&hadc1, &hdac1, &htim2, &hdac1, &htim3);
   /* USER CODE END 3 */
 }

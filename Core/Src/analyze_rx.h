@@ -7,6 +7,8 @@
  */
 #pragma once
 #include <stdint.h>
+
+void analyze_rx_start();
 void analyze_rx(uint16_t* buffer, unsigned int length, unsigned int samplingRateHz);
 
 

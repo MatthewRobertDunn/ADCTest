@@ -7,6 +7,7 @@
     "files.associations": {
         "headphone_out.h": "c",
         "stm32g4xx_hal_dac.h": "c",
-        "cstdint": "cpp"
+        "cstdint": "cpp",
+        "compare": "c"
     }
 }
