@@ -45,6 +45,15 @@ static float filter_taps[SAMPLEFILTER_TAP_NUM] = {
     2095297255781.407,
     -1782602357767.64};
 
+
+/**
+ * @brief Processes input data through the FIR filter and generates filtered output.
+ * @param f: Filter object to use
+ * @param input: Pointer to the input data array.
+ * @param output: Pointer to the output data array where the filtered data will be stored.
+ * @param length: Number of samples to be processed.
+ * @retval number of samples written to output, 0 if there is an error.
+ */
 unsigned int SampleFilter_run(SampleFilter *f, float *input, float *output, unsigned int length)
 {
     unsigned int write_index = 0;
