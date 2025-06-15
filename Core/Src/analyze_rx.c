@@ -2,13 +2,14 @@
 #include <stdint.h>
 #include "debug_output.h"
 #include "sample_filter.h"
+#include "frequency_analyzer.h"
 
 // Define the filter
 SampleFilter rx_filter;
 
 void analyze_rx_start()
 {
-    SampleFilter_init(&rx_filter);
+    frequency_analyzer_start();
 }
 
 /**
@@ -44,11 +45,10 @@ void analyze_rx(uint16_t *buffer, unsigned int length, unsigned int samplingRate
     float float_buffer[length];
     adc_to_float_buffer(buffer, float_buffer, length);
 
-    float output_buffer[length];
+    //Get the magnitude of our signal
+    float magnitude = frequency_analyzer_analyze(float_buffer);
 
-    //Run the filter
-    if(SampleFilter_run(&rx_filter, float_buffer, output_buffer, length) > 0)
-    {
-        //Sampling filter worked, do something with the output output_buffer
-    }
+    //Do something with the result.
+
+
 }
