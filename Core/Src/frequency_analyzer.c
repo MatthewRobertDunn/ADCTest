@@ -14,7 +14,7 @@ static float window[BUFFER_SIZE];
  */
 void frequency_analyzer_start(void)
 {
-    const float w = 2.0f * (float)M_PI * TARGET_FREQ / SAMPLE_RATE;
+    const float w = 2.0f * (float)M_PI * ((float)TARGET_FREQ) / ((float)SAMPLE_RATE);
 
     for (int n = 0; n < BUFFER_SIZE; n++)
     {
