@@ -52,7 +52,7 @@ float frequency_analyzer_analyze(const float buffer[])
         imag -= sample * sin_arr[i]; // Negative sign per original Python
     }
 
-    // Calculate magnitude (scaled by 2/N)
+    // Calculate magnitude (scaled by 4/N)
     float magnitude = (4.0f / BUFFER_SIZE) * sqrtf(real * real + imag * imag);
     return magnitude;
 }
